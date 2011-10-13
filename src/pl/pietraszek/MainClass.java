@@ -9,7 +9,10 @@ import java.lang.reflect.Method;
  */
 public class MainClass {
 	
-    private ExampleClass example;
+    private static final Integer DEFAULT_MAX = 1000;
+    
+    
+	private ExampleClass example;
 
 	public MainClass(ExampleClass example) {
     	this.example = example;
@@ -20,8 +23,15 @@ public class MainClass {
         
         MainClass mainClass = new MainClass(example);
         mainClass.checkPrivateFieldValue();
-        mainClass.invokeMethod(Integer.valueOf(args[0]));
+        mainClass.invokeMethod(parseMax(args[0]));
     }
+
+	private static Integer parseMax(String arg) {
+		if(arg != null) {
+			return Integer.valueOf(arg);
+		}
+		return DEFAULT_MAX;
+	}
 
 	private void invokeMethod(Integer max)
 			throws 
