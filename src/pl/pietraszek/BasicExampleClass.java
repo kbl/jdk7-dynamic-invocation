@@ -1,10 +1,12 @@
 package pl.pietraszek;
 
-
+/**
+ * @author Marcin Pietraszek
+ */
 public class BasicExampleClass {
 
     private String examplePrivateField;
-    protected String exampleProtectedField;
+	protected String exampleProtectedField;
     /* package */ String exampleDefaultField;
     public String examplePublicField;
 
@@ -13,6 +15,14 @@ public class BasicExampleClass {
         this.exampleProtectedField = "protected field";
         this.exampleDefaultField = "default field";
         this.examplePublicField = "public field";
+    }
+    
+    public String getExamplePrivateField() {
+		return examplePrivateField;
+	}
+    
+    public Integer exampleMethod(Integer arg) {
+    	return arg * arg;
     }
 
 }
