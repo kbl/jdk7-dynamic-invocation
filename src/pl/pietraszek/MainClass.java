@@ -1,5 +1,9 @@
 package pl.pietraszek;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,7 +13,7 @@ import java.lang.reflect.Method;
  */
 public class MainClass {
 	
-    private static final Integer DEFAULT_MAX = 1000;
+    private static final int DEFAULT_MAX = 1000;
     
     
 	private ExampleClass example;
@@ -18,22 +22,41 @@ public class MainClass {
     	this.example = example;
 	}
 
-	public static void main(String ... args) throws Exception {
+	public static void main(String ... args) throws Throwable {
         ExampleClass example = new ExampleClass();
+        int repetitions = parseMax(args[0]);
         
         MainClass mainClass = new MainClass(example);
         mainClass.checkPrivateFieldValue();
-        mainClass.invokeMethod(parseMax(args[0]));
+		mainClass.invokeMethodWithReflection(repetitions);
+        mainClass.invokeWithInvokeDynamic(repetitions);
     }
 
-	private static Integer parseMax(String arg) {
+	private static int parseMax(String arg) {
 		if(arg != null) {
-			return Integer.valueOf(arg);
+			return Integer.parseInt(arg);
 		}
 		return DEFAULT_MAX;
 	}
+	
+	
 
-	private void invokeMethod(Integer max)
+	private void invokeWithInvokeDynamic(int repetitions) 
+			throws Throwable {
+		Lookup lookup = MethodHandles.lookup();
+        MethodType methodType = MethodType.methodType(Integer.class, Double.class);
+        
+        MethodHandle methodHandle = lookup.findVirtual(
+        		ExampleClass.class, 
+        		"exampleMethod", 
+        		methodType);
+        
+        for(int i = 0; i < repetitions; i++) {
+        	System.out.println(methodHandle.invokeExact(123));
+        }
+	}
+
+	private void invokeMethodWithReflection(int repetitions)
 			throws 
 			NoSuchMethodException, 
 			IllegalAccessException,
@@ -41,7 +64,7 @@ public class MainClass {
 		
 		Method method = example.getClass().getMethod("exampleMethod", Integer.class);
 		
-        for(int i = 0; i < max; i++) {
+        for(int i = 0; i < repetitions; i++) {
         	method.invoke(example, Integer.valueOf(i));
         }
 	}
