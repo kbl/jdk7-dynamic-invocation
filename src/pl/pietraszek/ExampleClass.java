@@ -3,14 +3,14 @@ package pl.pietraszek;
 /**
  * @author Marcin Pietraszek
  */
-public class BasicExampleClass {
+public class ExampleClass {
 
     private String examplePrivateField;
 	protected String exampleProtectedField;
     /* package */ String exampleDefaultField;
     public String examplePublicField;
 
-    public BasicExampleClass() {
+    public ExampleClass() {
         this.examplePrivateField = "private field";
         this.exampleProtectedField = "protected field";
         this.exampleDefaultField = "default field";
