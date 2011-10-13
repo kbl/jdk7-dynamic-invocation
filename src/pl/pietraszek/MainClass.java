@@ -15,73 +15,86 @@ public class MainClass {
 	
     private static final int DEFAULT_MAX = 1000;
     
-    
 	private ExampleClass example;
-
-	public MainClass(ExampleClass example) {
-    	this.example = example;
-	}
+	private int repetitions;
+	private long executionStartTime;
+	
 
 	public static void main(String ... args) throws Throwable {
         ExampleClass example = new ExampleClass();
-        int repetitions = parseMax(args[0]);
+        int repetitions = parseMax(args);
         
-        MainClass mainClass = new MainClass(example);
-        mainClass.checkPrivateFieldValue();
-		mainClass.invokeMethodWithReflection(repetitions);
-        mainClass.invokeWithInvokeDynamic(repetitions);
+        MainClass mainClass = new MainClass(example, repetitions);
+
+		mainClass.invokeMethodWithReflection();
+        mainClass.invokeWithInvokeDynamic();
+        mainClass.invokeStandardMethod();
     }
 
-	private static int parseMax(String arg) {
-		if(arg != null) {
-			return Integer.parseInt(arg);
+	private static int parseMax(String[] args) {
+		if(args != null && args.length > 0) {
+			return Integer.parseInt(args[0]);
 		}
 		return DEFAULT_MAX;
 	}
 	
 	
+	public MainClass(ExampleClass example, int repetitions) {
+    	this.example = example;
+    	this.repetitions = repetitions;
+	}
 
-	private void invokeWithInvokeDynamic(int repetitions) 
+
+	public void invokeStandardMethod() {
+		startCountingTime();
+		
+		for(int i = 0; i < repetitions; i++) {
+			example.exampleMethod(i);
+		}
+		
+		printExecutionTime();
+	}
+
+	public void invokeWithInvokeDynamic() 
 			throws Throwable {
+		startCountingTime();
+		
 		Lookup lookup = MethodHandles.lookup();
-        MethodType methodType = MethodType.methodType(Integer.class, Double.class);
-        
+		
+        MethodType methodType = MethodType.methodType(Double.class, int.class);
         MethodHandle methodHandle = lookup.findVirtual(
         		ExampleClass.class, 
         		"exampleMethod", 
         		methodType);
         
         for(int i = 0; i < repetitions; i++) {
-        	System.out.println(methodHandle.invokeExact(123));
+        	methodHandle.invoke(example, i);
         }
+        
+        printExecutionTime();
 	}
 
-	private void invokeMethodWithReflection(int repetitions)
-			throws 
-			NoSuchMethodException, 
-			IllegalAccessException,
-			InvocationTargetException {
+	public void invokeMethodWithReflection()
+			throws NoSuchMethodException, 
+					IllegalAccessException,
+					InvocationTargetException {
+		startCountingTime();
 		
-		Method method = example.getClass().getMethod("exampleMethod", Integer.class);
+		Method method = example.getClass().getMethod("exampleMethod", int.class);
 		
         for(int i = 0; i < repetitions; i++) {
-        	method.invoke(example, Integer.valueOf(i));
+        	method.invoke(example, i);
         }
-	}
-	
-	private String checkPrivateFieldValue() {
-		try {
-			Field field = example.getClass().getDeclaredField("examplePrivateField");
-			
-			field.setAccessible(true);
-			String privateFieldValue = (String) field.get(example);
-			field.setAccessible(false);
-			
-			return privateFieldValue;
-		} catch (IllegalArgumentException | IllegalAccessException | 
-				 NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
+        
+        printExecutionTime();
 	}
 
+	private void printExecutionTime() {
+		System.out.println(System.currentTimeMillis() - executionStartTime);
+	}
+
+	private void startCountingTime() {
+		executionStartTime = System.currentTimeMillis();
+	}
+	
 }

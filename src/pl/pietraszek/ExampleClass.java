@@ -11,7 +11,7 @@ public class ExampleClass {
 		return examplePrivateField;
 	}
     
-    public Double exampleMethod(Integer arg) {
+    public Double exampleMethod(int arg) {
     	return arg * arg * 1.1;
     }
 
