@@ -4,7 +4,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -52,7 +51,7 @@ public class MainClass {
 			example.exampleMethod(i);
 		}
 		
-		printExecutionTime();
+		printExecutionTime("standard: ");
 	}
 
 	public void invokeWithInvokeDynamic() 
@@ -71,7 +70,7 @@ public class MainClass {
         	methodHandle.invoke(example, i);
         }
         
-        printExecutionTime();
+        printExecutionTime("invokeDynamic: ");
 	}
 
 	public void invokeMethodWithReflection()
@@ -86,11 +85,12 @@ public class MainClass {
         	method.invoke(example, i);
         }
         
-        printExecutionTime();
+        printExecutionTime("reflection:");
 	}
 
-	private void printExecutionTime() {
-		System.out.println(System.currentTimeMillis() - executionStartTime);
+	private void printExecutionTime(String methodName) {
+		long executionTime = System.currentTimeMillis() - executionStartTime;
+		System.out.println(methodName + executionTime);
 	}
 
 	private void startCountingTime() {

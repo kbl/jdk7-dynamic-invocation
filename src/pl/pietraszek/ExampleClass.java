@@ -5,14 +5,10 @@ package pl.pietraszek;
  */
 public class ExampleClass {
 
-    private String examplePrivateField = "private field";
+    private static final Double exampleFactor = 1.1;
 
-    public String getExamplePrivateField() {
-		return examplePrivateField;
-	}
-    
     public Double exampleMethod(int arg) {
-    	return arg * arg * 1.1;
+    	return arg * arg * exampleFactor;
     }
 
 }
